@@ -6,6 +6,8 @@ name: default
 
 metadata:
   namespace: builds
+  commands:
+      - go build
 
 node_selector:
   doks.digitalocean.com/node-pool: josa-cloud-np
