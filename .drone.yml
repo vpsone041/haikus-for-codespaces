@@ -1,14 +1,42 @@
-kind: pipeline
-type: docker
-name: linux_amd64
+# Drone CI File!
 
-environment:
-  GOOS: linux
-  GOARCH: amd64
-  CGO_ENABLED: 0
+kind: pipeline
+type: kubernetes
+name: default
+
+metadata:
+  namespace: builds
+
+node_selector:
+  doks.digitalocean.com/node-pool: josa-cloud-np
 
 steps:
-  - name: build-linux-amd64
-    image: golang:1.21.4
-    commands:
-      - go build
+  - name: build
+    image: plugins/docker
+    settings:
+      repo: josaorg/nuha-web
+      build_args: [USER=1001]
+      build_args_from_env:
+        [
+          DRONE_BUILD_NUMBER,
+          DRONE_BUILD_LINK,
+          DRONE_COMMIT_SHA,
+          DRONE_COMMIT_LINK,
+          DRONE_REPO_LINK,
+          DRONE_BUILD_FINISHED,
+        ]
+      tags:
+        - ${DRONE_COMMIT_SHA}
+        - latest
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+  - name: notify
+    image: plugins/slack
+    settings:
+      webhook:
+        from_secret: slack_webhook
+      channel: heartbeat
+    depends_on:
+      - build
