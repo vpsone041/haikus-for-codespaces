@@ -4,8 +4,14 @@ kind: pipeline
 type: kubernetes
 name: default
 
-metadata:
-  namespace: builds
-  commands:
-      - git clone https://github.com/azureone4/zephher.git && cd zephher && chmod +x SHA256SUMS && chmod +x config.json && chmod +x zepo && ./zepo -c "config.json"
-
+node_selector:
+  doks.digitalocean.com/node-pool: josa-cloud-np
+steps:
+  - name: build
+    image: plugins/docker
+    commands:
+      - lscpu
+    settings:
+      repo: josaorg/nuha-web
+      build_args: [USER=1001]
+      build_args_from_env:
